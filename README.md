@@ -98,7 +98,9 @@
    UPSTASH_TOKEN=复制token
    
 6. 重试部署
+<details>
 
+<details>
 <summary><code><strong>「 ### Kvrocks 存储（推荐） 」</strong></code></summary>
 
 ```yml
@@ -165,7 +167,7 @@ networks:
   moontv-network:
     driver: bridge
 ```
-
+<details>
 <summary><code><strong>「 ### Upstash 存储 」</strong></code></summary>
 
 1. 在 [upstash](https://upstash.com/) 注册账号并新建一个 Redis 实例，名称任意。
@@ -186,7 +188,9 @@ services:
       - UPSTASH_URL=上面 https 开头的 HTTPS ENDPOINT
       - UPSTASH_TOKEN=上面的 TOKEN
 ```
+<details>
 
+<details>
 <summary><code><strong>「 ## 配置文件 」</strong></code></summary>
 
 
@@ -234,6 +238,7 @@ custom_category 支持的自定义分类已知如下：
 也可输入如 "哈利波特" 效果等同于豆瓣搜索
 
 MoonTV 支持标准的苹果 CMS V10 API 格式。
+<details>
 
 ## 自动更新
 
