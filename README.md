@@ -250,7 +250,9 @@ MoonTV 支持标准的苹果 CMS V10 API 格式。
 
 dockge/komodo 等 docker compose UI 也有自动更新功能
 
-## 环境变量
+<details>
+<summary><code><strong>「 ## 环境变量 」</strong></code></summary>
+
 
 | 变量                                | 说明                                         | 可选值                           | 默认值                                                                                                                     |
 | ----------------------------------- | -------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -271,6 +273,8 @@ dockge/komodo 等 docker compose UI 也有自动更新功能
 | NEXT_PUBLIC_DOUBAN_IMAGE_PROXY      | 自定义豆瓣图片代理 URL                       | url prefix                       | (空)                                                                                                                       |
 | NEXT_PUBLIC_DISABLE_YELLOW_FILTER   | 关闭色情内容过滤                             | true/false                       | false                                                                                                                      |
 | NEXT_PUBLIC_FLUID_SEARCH | 是否开启搜索接口流式输出 | true/ false | true |
+
+</details>
 
 NEXT_PUBLIC_DOUBAN_PROXY_TYPE 选项解释：
 
