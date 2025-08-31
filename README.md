@@ -65,8 +65,8 @@
 
 ## 部署
 
-
-### Vercel 部署
+<details>
+<summary><code><strong>「 ### Vercel 部署 」</strong></code></summary>
 
 #### 普通部署（localstorage）
 
@@ -99,8 +99,8 @@
    
 6. 重试部署
 
-
-### Kvrocks 存储（推荐）
+<details>
+<summary><code><strong>「 ### Kvrocks 存储（推荐） 」</strong></code></summary>
 
 ```yml
 services:
@@ -134,7 +134,8 @@ volumes:
   kvrocks-data:
 ```
 
-### Redis 存储（有一定的丢数据风险）
+<details>
+<summary><code><strong>「 ### Redis 存储（有一定的丢数据风险） 」</strong></code></summary>
 
 ```yml
 services:
@@ -166,8 +167,8 @@ networks:
   moontv-network:
     driver: bridge
 ```
-
-### Upstash 存储
+<details>
+<summary><code><strong>「 ### Upstash 存储 」</strong></code></summary>
 
 1. 在 [upstash](https://upstash.com/) 注册账号并新建一个 Redis 实例，名称任意。
 2. 复制新数据库的 **HTTPS ENDPOINT 和 TOKEN**
@@ -188,7 +189,9 @@ services:
       - UPSTASH_TOKEN=上面的 TOKEN
 ```
 
-## 配置文件
+<details>
+<summary><code><strong>「 ## 配置文件 」</strong></code></summary>
+
 
 完成部署后为空壳应用，无播放源，需要站长在管理后台的配置文件设置中填写配置文件（后续会支持订阅）
 
