@@ -99,7 +99,6 @@
    
 6. 重试部署
 
-<details>
 <summary><code><strong>「 ### Kvrocks 存储（推荐） 」</strong></code></summary>
 
 ```yml
@@ -134,7 +133,6 @@ volumes:
   kvrocks-data:
 ```
 
-<details>
 <summary><code><strong>「 ### Redis 存储（有一定的丢数据风险） 」</strong></code></summary>
 
 ```yml
@@ -167,7 +165,7 @@ networks:
   moontv-network:
     driver: bridge
 ```
-<details>
+
 <summary><code><strong>「 ### Upstash 存储 」</strong></code></summary>
 
 1. 在 [upstash](https://upstash.com/) 注册账号并新建一个 Redis 实例，名称任意。
@@ -189,7 +187,6 @@ services:
       - UPSTASH_TOKEN=上面的 TOKEN
 ```
 
-<details>
 <summary><code><strong>「 ## 配置文件 」</strong></code></summary>
 
 
