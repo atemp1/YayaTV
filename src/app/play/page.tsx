@@ -1308,7 +1308,7 @@ function PlayPageClient() {
         subtitleOffset: false,
         miniProgressBar: false,
         mutex: true,
-        playsInline: true,
+        playsInline: false,
         autoPlayback: false,
         airplay: true,
         theme: '#22c55e',
