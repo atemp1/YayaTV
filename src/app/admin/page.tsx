@@ -2403,13 +2403,13 @@ const VideoSourceConfig = ({
           {source.key}
         </td>
         <td
-          className='px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[14rem] truncate'
+          className='px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[7rem] truncate'
           title={source.api}
         >
           {source.api}
         </td>
         <td
-          className='px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[10rem] truncate'
+          className='px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[5rem] truncate'
           title={source.detail || '-'}
         >
           {source.detail || '-'}
@@ -2760,10 +2760,10 @@ const VideoSourceConfig = ({
               <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-28'>
                 Key
               </th>
-              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-44'>
+              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-[7rem]'>
                 API 地址
               </th>
-              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32'>
+              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-[5rem]'>
                 Detail 地址
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
