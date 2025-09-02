@@ -2031,6 +2031,9 @@ const VideoSourceConfig = ({
   const { isLoading, withLoading } = useLoadingState();
   const [sources, setSources] = useState<DataSource[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingSource, setEditingSource] = useState<DataSource | null>(null);
+  const [showEditConfirm, setShowEditConfirm] = useState(false);
   const [orderChanged, setOrderChanged] = useState(false);
   const [newSource, setNewSource] = useState<DataSource>({
     name: '',
@@ -2161,6 +2164,48 @@ const VideoSourceConfig = ({
     }).catch(() => {
       console.error('操作失败', 'add', newSource);
     });
+  };
+
+  const handleOpenEditSource = (source: DataSource) => {
+    setEditingSource({ ...source });
+    setShowEditForm(true);
+  };
+
+  const handleSaveEditSource = () => {
+    if (!editingSource) return;
+    if (!editingSource.name || !editingSource.key || !editingSource.api) return;
+
+    const original = sources.find((s) => s.key === editingSource.key);
+
+    withLoading('editSource', async () => {
+      try {
+        // delete original if custom
+        if (original && original.from !== 'config') {
+          await callSourceApi({ action: 'delete', key: original.key });
+        }
+
+        // add updated
+        await callSourceApi({ action: 'add', key: editingSource.key, name: editingSource.name, api: editingSource.api, detail: editingSource.detail });
+
+        showSuccess('视频源已更新', showAlert);
+        setShowEditForm(false);
+        setEditingSource(null);
+      } catch (err) {
+        try {
+          if (original && original.from !== 'config') {
+            await callSourceApi({ action: 'add', key: original.key, name: original.name, api: original.api, detail: original.detail });
+            showAlert({ type: 'error', title: '更新失败', message: '更新失败，已尝试回滚到原始视频源' });
+          } else {
+            showAlert({ type: 'error', title: '更新失败', message: err instanceof Error ? err.message : '更新失败' });
+          }
+        } catch (rbErr) {
+          showAlert({ type: 'error', title: '更新失败', message: '更新失败且回滚失败，请手动检查配置' });
+          console.error('回滚失败', rbErr);
+        }
+        console.error('编辑视频源失败', err);
+        throw err;
+      }
+    }).catch(() => {});
   };
 
   const handleDragEnd = (event: any) => {
@@ -2408,13 +2453,21 @@ const VideoSourceConfig = ({
             {!source.disabled ? '禁用' : '启用'}
           </button>
           {source.from !== 'config' && (
-            <button
-              onClick={() => handleDelete(source.key)}
-              disabled={isLoading(`deleteSource_${source.key}`)}
-              className={`${buttonStyles.roundedSecondary} ${isLoading(`deleteSource_${source.key}`) ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              删除
-            </button>
+            <>
+              <button
+                onClick={() => handleDelete(source.key)}
+                disabled={isLoading(`deleteSource_${source.key}`)}
+                className={`${buttonStyles.roundedSecondary} ${isLoading(`deleteSource_${source.key}`) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                删除
+              </button>
+              <button
+                onClick={() => { setEditingSource({ ...source }); setShowEditForm(true); }}
+                className={`${buttonStyles.roundedPrimary} ml-2`}
+              >
+                编辑
+              </button>
+            </>
           )}
         </td>
       </tr>
@@ -2619,6 +2672,70 @@ const VideoSourceConfig = ({
             </button>
           </div>
         </div>
+      )}
+
+      {showEditForm && editingSource && (
+        <div className='p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <input
+              type='text'
+              placeholder='名称'
+              value={editingSource.name}
+              onChange={(e) => setEditingSource((prev) => prev ? ({ ...prev, name: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+            <input
+              type='text'
+              placeholder='Key'
+              value={editingSource.key}
+              onChange={(e) => setEditingSource((prev) => prev ? ({ ...prev, key: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+            <input
+              type='text'
+              placeholder='API 地址'
+              value={editingSource.api}
+              onChange={(e) => setEditingSource((prev) => prev ? ({ ...prev, api: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+            <input
+              type='text'
+              placeholder='Detail 地址（选填）'
+              value={editingSource.detail}
+              onChange={(e) => setEditingSource((prev) => prev ? ({ ...prev, detail: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+          </div>
+          <div className='flex justify-end space-x-2'>
+            <button
+              onClick={() => { setShowEditForm(false); setEditingSource(null); }}
+              className={`px-4 py-2 ${buttonStyles.secondary}`}
+            >
+              取消
+            </button>
+            <button
+              onClick={() => setShowEditConfirm(true)}
+              disabled={!editingSource.name || !editingSource.key || !editingSource.api || isLoading('editSource')}
+              className={`px-4 py-2 ${!editingSource.name || !editingSource.key || !editingSource.api || isLoading('editSource') ? buttonStyles.disabled : buttonStyles.primary}`}
+            >
+              {isLoading('editSource') ? '保存中...' : '保存'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showEditConfirm && editingSource && createPortal(
+        <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4' onClick={() => setShowEditConfirm(false)}>
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6' onClick={(e) => e.stopPropagation()}>
+            <h3 className='text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2'>确认更新视频源</h3>
+            <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>将以删除并重新添加的方式更新该视频源，确定继续吗？</p>
+            <div className='flex justify-end space-x-3'>
+              <button onClick={() => setShowEditConfirm(false)} className={`px-3 py-1 ${buttonStyles.secondary}`}>取消</button>
+              <button onClick={() => { setShowEditConfirm(false); handleSaveEditSource(); }} className={`px-3 py-1 ${buttonStyles.primary}`}>确认</button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
 
