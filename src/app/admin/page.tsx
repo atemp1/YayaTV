@@ -2414,7 +2414,7 @@ const VideoSourceConfig = ({
         >
           {source.detail || '-'}
         </td>
-        <td className='px-3 py-4 whitespace-nowrap max-w-[1rem]'>
+  <td className='px-6 py-4 whitespace-nowrap max-w-[1rem]'>
           <span
             className={`px-2 py-1 text-xs rounded-full ${!source.disabled
               ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
@@ -2424,7 +2424,7 @@ const VideoSourceConfig = ({
             {!source.disabled ? '启用中' : '已禁用'}
           </span>
         </td>
-  <td className='px-3 py-4 whitespace-nowrap max-w-[1rem]'>
+  <td className='px-6 py-4 whitespace-nowrap max-w-[1rem]'>
           {(() => {
             const status = getValidationStatus(source.key);
             if (!status) {
@@ -2766,10 +2766,10 @@ const VideoSourceConfig = ({
               <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32'>
                 Detail 地址
               </th>
-              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                 状态
               </th>
-              <th className='px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                 有效性
               </th>
               <th className='px-3 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36'>
