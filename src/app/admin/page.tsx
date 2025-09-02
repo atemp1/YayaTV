@@ -2807,6 +2807,9 @@ const CategoryConfig = ({
   const { isLoading, withLoading } = useLoadingState();
   const [categories, setCategories] = useState<CustomCategory[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<CustomCategory | null>(null);
+  const [showEditConfirm, setShowEditConfirm] = useState(false);
   const [orderChanged, setOrderChanged] = useState(false);
   const [newCategory, setNewCategory] = useState<CustomCategory>({
     name: '',
@@ -2896,6 +2899,61 @@ const CategoryConfig = ({
       setShowAddForm(false);
     }).catch(() => {
       console.error('操作失败', 'add', newCategory);
+    });
+  };
+
+  const handleOpenEdit = (category: CustomCategory) => {
+    // clone to avoid editing original in list until saved
+    setEditingCategory({ ...category });
+    setShowEditForm(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingCategory) return;
+    if (!editingCategory.name || !editingCategory.query) return;
+
+    // We'll perform delete + add as a compatibility fallback because backend doesn't support 'edit'
+    // Steps:
+    // 1. Find original by matching query+type (originalKey)
+    // 2. Call delete action for original
+    // 3. Call add action with new values
+    // 4. If add fails after delete succeeded, attempt to rollback by re-adding original
+
+    const original = categories.find((c) => c.query === editingCategory.query && c.type === editingCategory.type);
+    const originalQuery = original ? original.query : null;
+    const originalType = original ? original.type : null;
+
+    withLoading('editCategory', async () => {
+      try {
+        // If original exists and is from custom, delete it first
+        if (original && original.from !== 'config') {
+          await callCategoryApi({ action: 'delete', query: original.query, type: original.type });
+        }
+
+        // Then add the new/updated category
+        await callCategoryApi({ action: 'add', name: editingCategory.name, type: editingCategory.type, query: editingCategory.query });
+
+        showSuccess('分类已更新', showAlert);
+        setShowEditForm(false);
+        setEditingCategory(null);
+      } catch (err) {
+        // 如果 delete 成功但 add 失败，我们尝试回滚：重新添加原始项（如果 original 存在且 from !== 'config'）
+        try {
+          if (original && original.from !== 'config') {
+            await callCategoryApi({ action: 'add', name: original.name || '', type: original.type, query: original.query });
+            showAlert({ type: 'error', title: '更新失败', message: '更新失败，已尝试回滚到原始分类' });
+          } else {
+            showAlert({ type: 'error', title: '更新失败', message: err instanceof Error ? err.message : '更新失败' });
+          }
+        } catch (rbErr) {
+          showAlert({ type: 'error', title: '更新失败', message: '更新失败且回滚失败，请手动检查配置' });
+          console.error('回滚失败', rbErr);
+        }
+        console.error('编辑分类失败', err);
+        throw err;
+      }
+    }).catch(() => {
+      // withLoading 会在 finally 关闭 loading
     });
   };
 
@@ -2997,6 +3055,14 @@ const CategoryConfig = ({
               删除
             </button>
           )}
+          {category.from !== 'config' && (
+            <button
+              onClick={() => handleOpenEdit(category)}
+              className={`${buttonStyles.roundedPrimary} ml-2`}
+            >
+              编辑
+            </button>
+          )}
         </td>
       </tr>
     );
@@ -3070,6 +3136,64 @@ const CategoryConfig = ({
             </button>
           </div>
         </div>
+      )}
+
+      {showEditForm && editingCategory && (
+        <div className='p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <input
+              type='text'
+              placeholder='分类名称'
+              value={editingCategory.name}
+              onChange={(e) => setEditingCategory((prev) => prev ? ({ ...prev, name: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+            <select
+              value={editingCategory.type}
+              onChange={(e) => setEditingCategory((prev) => prev ? ({ ...prev, type: e.target.value as 'movie' | 'tv' }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            >
+              <option value='movie'>电影</option>
+              <option value='tv'>电视剧</option>
+            </select>
+            <input
+              type='text'
+              placeholder='搜索关键词'
+              value={editingCategory.query}
+              onChange={(e) => setEditingCategory((prev) => prev ? ({ ...prev, query: e.target.value }) : prev)}
+              className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            />
+          </div>
+          <div className='flex justify-end space-x-2'>
+            <button
+              onClick={() => { setShowEditForm(false); setEditingCategory(null); }}
+              className={`px-4 py-2 ${buttonStyles.secondary}`}
+            >
+              取消
+            </button>
+            <button
+              onClick={() => setShowEditConfirm(true)}
+              disabled={!editingCategory.name || !editingCategory.query || isLoading('editCategory')}
+              className={`px-4 py-2 ${!editingCategory.name || !editingCategory.query || isLoading('editCategory') ? buttonStyles.disabled : buttonStyles.primary}`}
+            >
+              {isLoading('editCategory') ? '保存中...' : '保存'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showEditConfirm && editingCategory && createPortal(
+        <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4' onClick={() => setShowEditConfirm(false)}>
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6' onClick={(e) => e.stopPropagation()}>
+            <h3 className='text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2'>确认更新分类</h3>
+            <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>确定要使用当前表单内容更新该分类？该操作会以删除并重新添加的方式执行，可能会导致短暂缺失。</p>
+            <div className='flex justify-end space-x-3'>
+              <button onClick={() => setShowEditConfirm(false)} className={`px-3 py-1 ${buttonStyles.secondary}`}>取消</button>
+              <button onClick={() => { setShowEditConfirm(false); handleSaveEdit(); }} className={`px-3 py-1 ${buttonStyles.primary}`}>确认</button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       {/* 分类表格 */}
