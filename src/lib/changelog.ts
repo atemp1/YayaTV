@@ -13,10 +13,10 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "101.1.2",
     date: "2025-09-02",
-    Added: [
+    added: [
       "管理后台：自定义分类与视频源支持“编辑”操作（后端无 edit 时采用删除+重建的兼容流程，失败时尝试回滚），新增操作确认弹窗和更明确的错误提示。"
     ],
-    Changed: [
+    changed: [
       "视频源列表界面优化：Key / API / Detail 列收窄并支持截断，状态与有效性列保持原状，以便列表在窄屏上更完整显示。"
     ],
     fixed: [
@@ -26,10 +26,10 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "101.1.1",
     date: "2025-09-01",
-    Added: [
+    added: [
       "iOS点击播放自动全屏"
     ],
-    Changed: [
+    changed: [
       "iOS点击播放自动全屏"
     ],
     fixed: [
@@ -39,10 +39,10 @@ export const changelog: ChangelogEntry[] = [
     {
     version: "101.1.0",
     date: "2025-08-28",
-    Added: [
+    added: [
       "支持vercel部署，解决vercel部署动态服务路由报错问题"
     ],
-    Changed: [
+    changed: [
       "支持vercel部署，解决vercel部署动态服务路由报错问题"
     ],
     fixed: [
