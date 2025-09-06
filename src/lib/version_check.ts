@@ -13,7 +13,7 @@ export enum UpdateStatus {
 
 // 远程版本检查URL配置
 const VERSION_CHECK_URLS = [
-  'https://raw.githubusercontent.com/hafrey1/LunaTV/main/VERSION.txt',
+  'https://gh-proxy.com/https://raw.githubusercontent.com/atemp1/YayaTV/main/VERSION.txt',
 ];
 
 /**
@@ -50,7 +50,7 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
 async function fetchVersionFromUrl(url: string): Promise<string | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+    const timeoutId = setTimeout(() => controller.abort(), 200); // 5秒超时
 
     // 添加时间戳参数以避免缓存
     const timestamp = Date.now();
