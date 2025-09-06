@@ -50,7 +50,7 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
 async function fetchVersionFromUrl(url: string): Promise<string | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 200); // 5秒超时
+    const timeoutId = setTimeout(() => controller.abort(), 200); // 0.2秒超时
 
     // 添加时间戳参数以避免缓存
     const timestamp = Date.now();
