@@ -13,7 +13,7 @@ export enum UpdateStatus {
 
 // 远程版本检查URL配置
 const VERSION_CHECK_URLS = [
-  'https://gh-proxy.com/https://raw.githubusercontent.com/atemp1/YayaTV/main/VERSION.txt',
+  'https://github.kkproxy.dpdns.org/https://raw.githubusercontent.com/atemp1/YayaTV/main/VERSION.txt',
 ];
 
 /**
